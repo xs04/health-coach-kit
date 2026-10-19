@@ -2,6 +2,7 @@
 
 > 給 AI：把 `{{ }}` 換成使用者的設定，整段當作排程的指令內容。
 > 資料格式詳見 [weekly-card/README.md](../weekly-card/README.md)，範例是 [weekly-card/sample.json](../weekly-card/sample.json)。
+> **圖卡內容和產生方式必須遵守 [weekly-card/SPEC.md](../weekly-card/SPEC.md)**：只能用範本產生、手機直式、只放規定的區塊、不能出現沒記錄的指標。
 
 ---
 
@@ -26,11 +27,12 @@
    - mascot：照「週報設定」帶入（`"default"` 就省略這個欄位；`"none"` 或 `{lift, peek}` 照原樣放）。格式見 weekly-card/MASCOT.md。
    - footer：「第 N 週」，從 {{START_DATE}} 那週算第 1 週；紀錄少於 7 天時加上「紀錄 X／7 天」。
    - **不要**加對話框、口號、擬人化的句子；**不要**放病史、腸胃狀況、檢驗數值和真實姓名。
-4. 產生圖片：
+   - **不要**加 JSON 格式以外的欄位或指標（睡眠、壓力、喝水、圖表、下週建議等），見 weekly-card/SPEC.md 第 4 節。
+4. 產生圖片（**禁止用圖片生成模型，也不要自己重寫版面**）：
    - 能跑 Node＋Playwright：`node weekly-card/render.mjs <data.json> <out.png>`
    - 只能跑 Python：`python weekly-card/build_html.py <data.json> <out.html>`，有 Python 版 Playwright 就加 `--png <out.png>`
    - 都不能執行：用文字表格呈現同樣的內容
-5. 自己看一次圖：沒有裁切、文字沒有被截斷（出現「…」就縮短後重做）、標籤沒有換行、吉祥物沒有擋到文字。
+5. 照 weekly-card/SPEC.md 第 5 節的檢查表自己看一次圖：用範本產生、直式、沒有多的區塊、每個數字都有紀錄來源、沒有裁切或截斷（出現「…」就縮短後重做）、吉祥物沒有擋到文字。
 6. 傳給使用者，問檢討項目要不要修改；確認後使用者自己轉給教練。
 
 ---

@@ -52,7 +52,7 @@
    - `onboarding/questions.md`、`notion/schema.md`
    - `prompts/nightly-checkin.md`、`prompts/weekly-report.md`
    - `platforms/chatgpt.md`
-   - `weekly-card/` 的 `template.html`、`build_html.py`、`sample.json`、`MASCOT.md`
+   - `weekly-card/` 的 `template.html`、`build_html.py`、`sample.json`、`SPEC.md`、`MASCOT.md`
 
    專案說明貼上：「照 AGENTS.md 和 safety.md 協助我。我用的是 ChatGPT，平台細節看 platforms/chatgpt.md。」然後在專案裡開新對話，貼上同樣的測試指令。
 
@@ -84,7 +84,7 @@
 | 主動性 | 有沒有變成被動（「你告訴我我再記」「排程還沒啟用」然後就停下來）？Notion 已有資料時，有沒有照樣把排程、週報、吉祥物設定完？ |
 | 完成檢查表 | 說「設定完成」之前，有沒有列出 AGENTS.md 階段 7 的檢查表，而且每項都完成或有交代？ |
 | 吉祥物 | 有沒有問你想要什麼吉祥物？拍寵物照片後畫得像不像？有沒有先給你看、確認後才存？ |
-| 週報 | 範例圖有沒有說明是假資料；產圖方式是否可行 |
+| 週報 | 是不是用 `template.html` 產生（不是圖片生成）？手機直式？有沒有出現 SPEC.md 禁止的東西（睡眠、壓力、喝水、趨勢圖、下週建議、照片風格）？範例圖有沒有說明是假資料？ |
 
 ## 回報
 
