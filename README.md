@@ -16,13 +16,24 @@
 
 ## 怎麼開始
 
-1. 確認你有權限讀這個 repo（private repo，請擁有者把你加進來）
-2. 建議先在你的 AI 連上 **Notion**（沒有 Notion 也可以用，但功能會少一些）
-3. 開一個新對話，貼上這段話：
+1. 建議先在你的 AI 連上 **Notion**（沒有 Notion 也可以用，但功能會少一些）
+2. 開一個新對話，貼上這段話：
 
-   > 請讀 https://github.com/xs04/health-coach-kit 的 AGENTS.md，照裡面的流程幫我設定。
+   > 請讀 https://raw.githubusercontent.com/xs04/health-coach-kit/main/AGENTS.md ，照裡面的流程幫我設定。開始前先引用這份文件的第一行，讓我確認你真的讀到了。
 
-4. 回答它的問題，大約 10–15 分鐘
+3. 回答它的問題，大約 10–15 分鐘
+
+### AI 說讀不到的時候
+
+依序試下面的方法，任何一個成功就可以：
+
+| 方法 | 適用情況 |
+|---|---|
+| 1. 貼網址（上面那段話） | repo 是公開的，而且 AI 能上網讀網頁 |
+| 2. 在 AI 裡連接 GitHub，把這個 repo 附加進對話 | repo 是私人的，而且你有被加為協作者 |
+| 3. 下載檔案上傳 | 都不行時。GitHub 頁面按 **Code → Download ZIP**，解壓後上傳 `AGENTS.md`、`safety.md`、`onboarding/`、`notion/`、`prompts/`、`platforms/` 裡你用的那份、`weekly-card/` |
+
+> 判斷有沒有真的讀到：請 AI 引用 AGENTS.md 的第一行。引用不出來，或開始自己編流程，就是沒讀到。
 
 ### 用哪個 AI？
 

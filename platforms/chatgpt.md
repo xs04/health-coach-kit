@@ -7,13 +7,13 @@
 
 | 項目 | 說明 |
 |---|---|
-| 這個 repo 的內容 | 請 repo 擁有者把你加為協作者。ChatGPT 若有 GitHub 連線就直接讀；**沒有的話**，在 GitHub 下載 ZIP，解壓後把 `AGENTS.md`、`safety.md`、`onboarding/`、`notion/`、`prompts/`、`weekly-card/` 上傳到對話 |
-| 建議使用「專案（Project）」 | 把這些檔案放進專案的檔案區，專案說明寫：「照 AGENTS.md 和 safety.md 協助我」。之後所有對話都在這個專案裡進行，ChatGPT 比較不會忘記設定 |
+| 讓 ChatGPT 讀到這個 repo | 先照 README 的做法**貼網址**。讀不到時：有 GitHub 連線就附加 repo；再不行就下載 ZIP，把 `AGENTS.md`、`safety.md`、`onboarding/`、`notion/`、`prompts/`、`platforms/chatgpt.md`、`weekly-card/` 上傳 |
+| 建議使用「專案（Project）」 | 想長期使用的話，把上面那些檔案放進專案的檔案區，專案說明寫：「照 AGENTS.md 和 safety.md 協助我」。之後所有對話都在這個專案裡進行，ChatGPT 比較不會忘記設定 |
 | Notion 連線 | 如果你的方案有 Notion 連線（Connectors），先連上 |
 
 ## 開始
 
-在專案裡開一個對話，輸入：「照 AGENTS.md 幫我設定」。
+貼上 README「怎麼開始」的那段話；如果用專案，就在專案裡開對話，輸入「照 AGENTS.md 幫我設定」。
 
 ## 各階段在 ChatGPT 上怎麼做
 

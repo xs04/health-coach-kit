@@ -3,6 +3,8 @@
 > 你（AI）正在幫一位使用者設定「飲食＋運動紀錄小幫手」。照下面的階段依序進行。
 > **先讀 [safety.md](safety.md)，它的優先順序高於本文件。**
 > 用使用者的語言回覆（預設繁體中文、台灣用語）。
+>
+> **如果你是透過網址讀到這份文件**：其他檔案的網址是 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/<路徑>`，例如 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/safety.md`。需要哪份就讀哪份，讀不到時直接告訴使用者，請對方改用上傳檔案（見 README「AI 說讀不到的時候」），**不要憑印象自己補流程**。
 
 ## 全程規則
 

@@ -8,12 +8,14 @@ Gemini 有兩種用法，能力差很多，先選一種：
 | | Gemini App（網頁、手機） | Gemini CLI（電腦終端機） |
 |---|---|---|
 | 適合 | 一般使用者 | 會用終端機的人 |
-| 讀這個 repo | 下載 ZIP 後上傳檔案，或放進 Gem 的知識檔案 | `git clone` 後在資料夾裡執行，會自動讀 `GEMINI.md` |
+| 讀這個 repo | 先**貼網址**；讀不到時下載 ZIP 上傳，或放進 Gem 的知識檔案 | `git clone` 後在資料夾裡執行，會自動讀 `GEMINI.md` |
 | Notion | 通常**沒有**內建的 Notion 連線 → 建議改用 **Google 試算表** | 可以接 Notion 的 MCP 伺服器 |
 | 排程 | 部分方案有「排程動作」，可以定時發訊息 | 沒有內建排程 → 用手機鬧鐘或行事曆提醒 |
 | 產週報圖 | 程式執行環境通常沒有瀏覽器 → `build_html.py` 產生 HTML，開啟後截圖 | 本機有 Node＋Playwright 就用 `render.mjs` 直接出 PNG |
 
 ## Gemini App
+
+**快速開始**：開新對話，貼上 README「怎麼開始」的那段話。讀不到網址，或想長期使用，再改用下面的 Gem：
 
 1. 建立一個 **Gem**：
    - 指示（Instructions）貼上：「照 AGENTS.md 和 safety.md 協助我。我用的是 Gemini App，平台細節看 platforms/gemini.md。」

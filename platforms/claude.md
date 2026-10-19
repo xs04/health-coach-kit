@@ -7,14 +7,18 @@
 
 | 項目 | 在哪裡設定 |
 |---|---|
-| 這個 repo 的讀取權限 | 請 repo 擁有者把你的 GitHub 帳號加為協作者 |
-| GitHub 連線 | claude.ai 設定 → 連線 GitHub |
+| 讀到這個 repo | 一般聊天：貼 README 的網址即可。repo 是私人的、或要用 Claude Code：在 claude.ai 設定連線 GitHub（私人 repo 還要請擁有者把你加為協作者） |
 | Notion 連線 | claude.ai 設定 → Connectors → Notion，並授權要使用的頁面 |
 
 ## 開始
 
-1. 打開 claude.ai/code，開一個新的工作階段，**選這個 repo**（Claude 會自動讀 `CLAUDE.md`）
-2. 輸入：「照 AGENTS.md 幫我設定」
+三種方式擇一：
+
+| 方式 | 做法 |
+|---|---|
+| 一般聊天 | 貼上 README「怎麼開始」的那段話 |
+| 安裝 Skill | 上傳 `dist/health-coach-kit.skill`，之後說「我想開始記錄飲食」即可 |
+| Claude Code（實測過的方式） | claude.ai/code 開新的工作階段，**選這個 repo**（會自動讀 `CLAUDE.md`），輸入「照 AGENTS.md 幫我設定」 |
 
 ## 各階段在 Claude 上怎麼做
 
