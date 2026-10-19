@@ -1,6 +1,6 @@
 # Claude 的設定方式
 
-> ✅ 這套流程在 **Claude Code 網頁版（claude.ai/code，雲端環境）** 實際跑過。
+> ✅ 紀錄、每晚確認、週報這些核心功能，在 **Claude Code 網頁版（claude.ai/code，雲端環境）** 實際跑過；範本化之後的完整設定流程，尚待實測。
 > 其他 Claude 介面（一般聊天、桌面 App）可能少了某些功能，請照 AGENTS.md 階段 0 逐項確認。
 
 ## 使用者要先準備
