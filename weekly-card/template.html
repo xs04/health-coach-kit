@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="utf-8">
+<style>
+  /* 週報卡片：寬 1080，高度依內容。所有數字、目標、規則都由 data JSON 提供，範本本身不含任何個人設定 */
+  :root {
+    --cream: #fff8ee;
+    --mint: #d8efe3;
+    --mint-deep: #3f8f6b;
+    --tan: #c9773a;
+    --tan-soft: #f6e2cf;
+    --ink: #2b2622;
+    --muted: #7b736b;
+    --line: #eadfce;
+    --white: #ffffff;
+    --warn: #d0644a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    width: 1080px;
+    background: var(--cream);
+    font-family: "Noto Sans TC", "WenQuanYi Zen Hei", "PingFang TC", sans-serif;
+    color: var(--ink);
+  }
+  #card { position: relative; width: 1080px; padding: 36px 64px 40px; overflow: hidden; }
+
+  /* 背景裝飾：薄荷色圓、腳印 */
+  .blob { position: absolute; border-radius: 50%; background: var(--mint); z-index: 0; }
+  .blob.a { width: 380px; height: 380px; right: -110px; top: -190px; }
+  .blob.b { width: 300px; height: 300px; left: -120px; bottom: -90px; background: var(--tan-soft); }
+  .paw { position: absolute; z-index: 0; opacity: .16; fill: var(--tan); }
+  .content { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 18px; }
+
+  /* 頁首 */
+  header { display: flex; flex-direction: column; justify-content: flex-end; padding-right: 260px; min-height: 0; }
+  /* 吉祥物（配角）：頁首右側的運動姿勢（#dogLift）、「本週檢討」卡片右側探頭（#dogPeek）。
+     預設是伯恩山；可用 data.mascot 換成使用者自己的吉祥物，或設為 "none" 不放。規格見 MASCOT.md */
+  .no-mascot .dog-main, .no-mascot .dog-peek { display: none; }
+  .no-mascot .box.has-peek { padding-right: 32px; }
+  .dog-main { position: absolute; right: 76px; top: 6px; width: 172px; z-index: 3; }
+  .dog-peek { position: absolute; right: 36px; bottom: 14px; width: 150px; z-index: 2; }
+  .box.has-peek { position: relative; padding-right: 210px; }
+  .title .meta { display: flex; align-items: center; gap: 14px; }
+  .title small { display: inline-block; font-size: 22px; font-weight: 700; letter-spacing: .08em;
+    color: var(--mint-deep); background: var(--white); border-radius: 999px; padding: 4px 18px; }
+  .title h1 { font-size: 58px; line-height: 1.1; margin-top: 10px; letter-spacing: .02em; }
+  .title .range { font-size: 24px; color: var(--muted); }
+
+  /* 區塊卡 */
+  .box { background: var(--white); border-radius: 28px; padding: 22px 32px; box-shadow: 0 4px 16px rgba(43,38,34,.05); }
+  .box h2 { font-size: 26px; color: var(--muted); font-weight: 700; margin-bottom: 16px; letter-spacing: .04em; }
+  .box h2 b { color: var(--ink); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 18px; color: var(--muted); margin-top: 12px; }
+  .legend i { display: inline-block; width: 16px; height: 16px; border-radius: 50%; margin-right: 6px; vertical-align: -2px; }
+
+  /* 數字磚 */
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .stat { background: var(--cream); border-radius: 22px; padding: 18px 20px; }
+  .stat .label { font-size: 22px; color: var(--muted); }
+  .stat .value { font-size: 48px; font-weight: 800; margin-top: 2px; }
+  .stat .value span { font-size: 22px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .stat .sub { font-size: 20px; color: var(--muted); }
+  .stat .target { font-size: 20px; color: var(--muted); margin-top: 6px; }
+  .stat .gap { display: inline-block; font-size: 20px; font-weight: 700; margin-top: 6px; padding: 2px 12px; border-radius: 999px; }
+  .stat .gap.good { background: var(--mint); color: var(--mint-deep); }
+  .stat .gap.bad { background: #fbe3dc; color: var(--warn); }
+  .stat .sub.good { color: var(--mint-deep); font-weight: 700; }
+  .stat .sub.bad { color: var(--warn); font-weight: 700; }
+  .bar { height: 12px; border-radius: 999px; background: var(--line); margin-top: 10px; overflow: hidden; }
+  .bar i { display: block; height: 100%; border-radius: 999px; background: var(--mint-deep); }
+
+  /* 這一週：運動＋三餐合併在同一張表 */
+  /* 運動圖示：外框顏色＝狀態（實線綠＝照計畫、實線棕＝有調整、紅虛線＝沒做到、灰虛線＝休息） */
+  .ico { display: inline-flex; gap: 4px; padding: 4px 6px; border-radius: 999px; border: 2px dashed var(--line); background: var(--white); }
+  .ico svg { width: 34px; height: 34px; display: block; }
+  .ico.done { border: 2px solid var(--mint-deep); background: #eef8f3; }
+  .ico.swap { border: 2px solid var(--tan); background: #fbf1e7; }
+  .ico.skip { border: 2px dashed var(--warn); }
+  .ico.skip svg { opacity: .35; }
+  .ico-legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 18px; color: var(--muted); margin-top: 12px; }
+  .ico-legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .ico-legend svg { width: 26px; height: 26px; }
+  table.meals { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 20px; }
+  .meals th { font-size: 19px; color: var(--muted); font-weight: 700; text-align: left; padding: 0 8px 8px; }
+  .meals td { padding: 9px 8px; border-top: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meals td.wd { font-weight: 700; }
+  .meals td.wd small { display: block; font-size: 15px; color: var(--muted); font-weight: 400; }
+  .meals td.num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 700; }
+  .meals td.num.good { color: var(--mint-deep); }
+  .meals td.num.low, .meals td.num.over { color: var(--warn); }
+  .meals td.off { color: var(--tan); }
+  .meals th.num { text-align: right; }
+  .legend b { color: var(--tan); }
+  /* 達標計算規則（灰色小字） */
+  .rules { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--line);
+    font-size: 17px; line-height: 1.65; color: #a39a90; }
+  .rules b { font-weight: 700; color: #8f867c; }
+
+  /* 本週檢討 */
+  .review { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .review li { font-size: 22px; line-height: 1.45; display: flex; gap: 12px; align-items: flex-start; }
+  .review .mark { flex: none; font-size: 17px; font-weight: 700; border-radius: 999px; padding: 3px 12px; margin-top: 2px; }
+  .review .good .mark { background: var(--mint); color: var(--mint-deep); }
+  .review .fix .mark { background: #fbe3dc; color: var(--warn); }
+
+  footer { display: flex; justify-content: space-between; align-items: center; font-size: 20px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div id="card">
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+  <svg class="paw" style="left:600px;top:40px;width:56px;transform:rotate(18deg)" viewBox="0 0 100 100"><use href="#pawshape"/></svg>
+  <svg class="paw" style="right:70px;bottom:120px;width:120px;transform:rotate(-22deg)" viewBox="0 0 100 100"><use href="#pawshape"/></svg>
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <!-- 運動圖示（24×24）：休息以外都有小人，線條圓頭、各自一種顏色 -->
+      <g id="ic-gym" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3.5h18" stroke="#9aa5a0" stroke-width="1.8"/>
+        <rect x="1.6" y="1" width="2.6" height="5" rx="1" fill="#6c7bd9" stroke="none"/>
+        <rect x="19.8" y="1" width="2.6" height="5" rx="1" fill="#6c7bd9" stroke="none"/>
+        <circle cx="12" cy="6.4" r="2.2" fill="#6c7bd9" stroke="none"/>
+        <path d="M6.4 3.6L9 10.2h6l2.6-6.6M12 10.2v5M12 15.2l-3.2 5.8M12 15.2l3.2 5.8" stroke="#6c7bd9" stroke-width="2.3"/>
+      </g>
+      <g id="ic-swim" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="7" cy="11.2" r="2.2" fill="#3aa7d6" stroke="none"/>
+        <path d="M9.6 13.4L18 12.6M10.5 12.6C12 6.8 16.5 6 19.5 9.6" stroke="#3aa7d6" stroke-width="2.3"/>
+        <path d="M1.5 16.6c1.8-1.4 3.3-1.4 5 0s3.3 1.4 5 0 3.3-1.4 5 0 3.3 1.4 5 0M1.5 20.6c1.8-1.4 3.3-1.4 5 0s3.3 1.4 5 0 3.3-1.4 5 0 3.3 1.4 5 0" stroke="#7cc8e8" stroke-width="1.8"/>
+      </g>
+      <g id="ic-coach" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="8" cy="4.4" r="2.2" fill="#f29a38" stroke="none"/>
+        <rect x="10.2" y="4.6" width="3.4" height="1.9" rx=".9" fill="#c9773a" stroke="none"/>
+        <path d="M8 7v7.5M8 14.5l-2.8 6.5M8 14.5l2.8 6.5M8 9l-3.5 3.5M8 9l5 2.6" stroke="#f29a38" stroke-width="2.3"/>
+        <rect x="13.4" y="8.4" width="7.4" height="9" rx="1.2" fill="#fde3c4" stroke="#f29a38" stroke-width="1.6"/>
+        <path d="M15.2 11.4h3.8M15.2 14h3.8" stroke="#f29a38" stroke-width="1.3"/>
+      </g>
+      <g id="ic-walk" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12.6" cy="3.6" r="2.2" fill="#4caf7a" stroke="none"/>
+        <path d="M12.3 6.4l-.8 7M11.5 13.4l-2.6 7.4M11.5 13.4l2.6 3.2 .6 4.2M12.1 8.2l-3.4 3.8M12.1 8.2l3.6 3.2" stroke="#4caf7a" stroke-width="2.3"/>
+      </g>
+      <g id="ic-run" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="15.6" cy="3.6" r="2.2" fill="#ef6b5b" stroke="none"/>
+        <path d="M14.6 6.6L11.6 12.6M11.6 12.6l-4.4 1.4-1.4 4M11.6 12.6l3.6 3-1 5.6M14.2 7.6l4 2.4 2-2.6M14.2 7.6l-4.2.6-1.8 2.8" stroke="#ef6b5b" stroke-width="2.3"/>
+        <path d="M1.5 7.5h3.5M.8 11h3M2 14.5h2" stroke="#f6a99f" stroke-width="1.6"/>
+      </g>
+      <g id="ic-stretch" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="20.4" width="20" height="2.6" rx="1.3" fill="#f5c0d6" stroke="none"/>
+        <circle cx="9.6" cy="5.2" r="2.2" fill="#e57aa6" stroke="none"/>
+        <path d="M11 7.6Q12.6 11 12.4 14.4M12.4 14.4l-4.2 5.6M12.4 14.4l4.2 5.6M11.6 9.6Q15.4 6 13.6 2.2M11.6 9.6Q8 11.6 6.6 9.4" stroke="#e57aa6" stroke-width="2.3"/>
+      </g>
+      <g id="ic-rest"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.7 7 7 0 0 1-5-13.7z" fill="#f2c14e"/><path d="M15 6h4l-4 4h4" fill="none" stroke="#c9a03a" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></g>
+      <g id="ic-other"><path d="M12 3l2.4 5.6 6 .5-4.6 4 1.4 5.9L12 16l-5.2 3 1.4-5.9-4.6-4 6-.5z" fill="#b58be0"/></g>
+      <!-- 伯恩山頭部（共用）：黑底、白鼻樑、焦糖眉點與臉頰、吐舌微笑 -->
+      <g id="dogHead">
+        <ellipse cx="-62" cy="12" rx="26" ry="44" fill="#2b2622" transform="rotate(14 -62 12)"/>
+        <ellipse cx="62" cy="12" rx="26" ry="44" fill="#2b2622" transform="rotate(-14 62 12)"/>
+        <ellipse cx="0" cy="0" rx="72" ry="64" fill="#2b2622"/>
+        <ellipse cx="-38" cy="34" rx="20" ry="16" fill="#c9773a"/>
+        <ellipse cx="38" cy="34" rx="20" ry="16" fill="#c9773a"/>
+        <path d="M-9 -62 Q0 -68 9 -62 L16 8 Q0 2 -16 8 Z" fill="#fff"/>
+        <ellipse cx="0" cy="36" rx="38" ry="28" fill="#fff"/>
+        <ellipse cx="-27" cy="-22" rx="8" ry="5.5" fill="#c9773a"/>
+        <ellipse cx="27" cy="-22" rx="8" ry="5.5" fill="#c9773a"/>
+        <circle cx="-26" cy="-6" r="8.5" fill="#1a1613"/>
+        <circle cx="26" cy="-6" r="8.5" fill="#1a1613"/>
+        <circle cx="-23.5" cy="-8.5" r="2.4" fill="#fff"/>
+        <circle cx="28.5" cy="-8.5" r="2.4" fill="#fff"/>
+        <ellipse cx="-46" cy="18" rx="9" ry="6" fill="#f4a7a0" opacity=".55"/>
+        <ellipse cx="46" cy="18" rx="9" ry="6" fill="#f4a7a0" opacity=".55"/>
+        <ellipse cx="0" cy="22" rx="12" ry="8.5" fill="#1a1613"/>
+        <path d="M-16 38 Q0 52 16 38" fill="none" stroke="#1a1613" stroke-width="3" stroke-linecap="round"/>
+        <path d="M-8 44 Q0 64 8 44 Z" fill="#f08b9a"/>
+      </g>
+
+      <!-- 頁首：坐著舉啞鈴、戴運動頭帶 -->
+      <g id="dogLift">
+        <ellipse cx="150" cy="318" rx="110" ry="10" fill="#2b2622" opacity=".08"/>
+        <ellipse cx="150" cy="245" rx="92" ry="78" fill="#2b2622"/>
+        <path d="M150 165 C112 180 104 240 124 300 L176 300 C196 240 188 180 150 165 Z" fill="#fff"/>
+        <rect x="98" y="250" width="30" height="62" rx="15" fill="#c9773a"/>
+        <ellipse cx="113" cy="312" rx="22" ry="12" fill="#fff"/>
+        <!-- 舉起的右前腳＋啞鈴 -->
+        <rect x="186" y="150" width="30" height="96" rx="15" fill="#c9773a" transform="rotate(28 201 246)"/>
+        <g transform="translate(252 140) rotate(-20)">
+          <rect x="-34" y="-4" width="68" height="8" rx="4" fill="#9aa5a0"/>
+          <rect x="-46" y="-18" width="14" height="36" rx="5" fill="#3f8f6b"/>
+          <rect x="32" y="-18" width="14" height="36" rx="5" fill="#3f8f6b"/>
+        </g>
+        <ellipse cx="246" cy="150" rx="17" ry="15" fill="#fff"/>
+        <g transform="translate(140 108)"><use href="#dogHead"/>
+          <!-- 運動頭帶 -->
+          <path d="M-62 -40 Q0 -70 62 -40 L66 -28 Q0 -58 -66 -28 Z" fill="#7cc4ad"/>
+          <path d="M-64 -34 Q0 -64 64 -34" fill="none" stroke="#fff" stroke-width="3" opacity=".8"/>
+        </g>
+        <!-- 汗滴 -->
+        <path d="M222 62 Q228 74 222 80 Q216 74 222 62 Z" fill="#9fd3ea"/>
+      </g>
+
+      <!-- 「下週想加強」右上角：探頭、兩隻前腳搭在卡片上 -->
+      <g id="dogPeek">
+        <g transform="translate(80 62) scale(.82)"><use href="#dogHead"/></g>
+        <ellipse cx="46" cy="118" rx="19" ry="12" fill="#fff" stroke="#e2d4c0" stroke-width="2.5"/>
+        <ellipse cx="114" cy="118" rx="19" ry="12" fill="#fff" stroke="#e2d4c0" stroke-width="2.5"/>
+        <path d="M40 112 v8 M46 111 v9 M52 112 v8 M108 112 v8 M114 111 v9 M120 112 v8" stroke="#e2d4c0" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <g id="pawshape">
+        <ellipse cx="50" cy="66" rx="24" ry="20"/>
+        <ellipse cx="22" cy="40" rx="10" ry="13"/>
+        <ellipse cx="40" cy="24" rx="10" ry="13"/>
+        <ellipse cx="60" cy="24" rx="10" ry="13"/>
+        <ellipse cx="78" cy="40" rx="10" ry="13"/>
+      </g>
+    </defs>
+  </svg>
+
+  <div class="content">
+    <header>
+      <div class="title">
+        <div class="meta"><small id="badge">WEEKLY</small><span class="range" id="range"></span></div>
+        <h1>本週訓練週報</h1>
+      </div>
+    </header>
+    <svg class="dog-main" viewBox="0 0 300 330" aria-hidden="true"><use href="#dogLift"/></svg>
+
+    <section class="box">
+      <h2>這一週　<b id="trainSummary"></b></h2>
+      <table class="meals">
+        <colgroup><col style="width:64px"><col style="width:112px"><col><col><col><col style="width:84px"><col style="width:76px"></colgroup>
+        <thead><tr><th></th><th>運動</th><th>早餐</th><th>午餐</th><th>晚餐</th><th class="num">熱量</th><th class="num">蛋白質</th></tr></thead>
+        <tbody id="week"></tbody>
+      </table>
+      <div class="ico-legend" id="icoLegend"></div>
+      <div class="legend">
+        <span><i style="border:2px solid var(--mint-deep)"></i>照計畫完成</span>
+        <span><i style="border:2px solid var(--tan)"></i>有調整</span>
+        <span><i style="border:2px dashed var(--warn)"></i>沒做到</span>
+        <span><b>棕色字</b>＝和菜單不同</span>
+        <span>數字綠色＝達標、紅色＝未達或超標（規則見下方）</span>
+      </div>
+    </section>
+
+    <section class="box">
+      <h2>本週平均 vs 目標</h2>
+      <div class="stats" id="stats"></div>
+      <div class="rules" id="rules"></div>
+    </section>
+
+
+    <section class="box has-peek">
+      <svg class="dog-peek" viewBox="0 0 160 140" aria-hidden="true"><use href="#dogPeek"/></svg>
+      <h2>本週檢討</h2>
+      <ul class="review" id="review"></ul>
+    </section>
+
+    <footer>
+      <span id="footerLeft"></span>
+      <span id="footerRight"></span>
+    </footer>
+  </div>
+</div>
+
+<script>
+  // 資料由 render.mjs 注入到 window.CARD_DATA；全部用 textContent 寫入
+  const D = window.CARD_DATA;
+
+  // 吉祥物：省略＝預設伯恩山；"none"＝不放；{ lift, peek }＝自訂 SVG 片段（座標規格見 MASCOT.md）
+  function sanitizeSvgFragment(fragment) {
+    // 只允許純圖形：移除 script、foreignObject、事件屬性、外部連結
+    const doc = new DOMParser().parseFromString(
+      `<svg xmlns="http://www.w3.org/2000/svg">${fragment}</svg>`, "image/svg+xml");
+    if (doc.querySelector("parsererror")) return null;
+    doc.querySelectorAll("script, foreignObject, iframe, image").forEach((n) => n.remove());
+    doc.querySelectorAll("*").forEach((n) => {
+      for (const a of [...n.attributes]) {
+        const name = a.name.toLowerCase();
+        if (name.startsWith("on")) n.removeAttribute(a.name);
+        if ((name === "href" || name === "xlink:href") && !a.value.startsWith("#")) n.removeAttribute(a.name);
+      }
+    });
+    return [...doc.documentElement.childNodes];
+  }
+  function applyMascot(m) {
+    if (m === "none") { document.getElementById("card").classList.add("no-mascot"); return; }
+    if (!m || typeof m !== "object") return;
+    for (const [key, id] of [["lift", "dogLift"], ["peek", "dogPeek"]]) {
+      if (!m[key]) continue;
+      const nodes = sanitizeSvgFragment(m[key]);
+      if (!nodes) continue;
+      const target = document.getElementById(id);
+      target.replaceChildren(...nodes.map((n) => document.importNode(n, true)));
+    }
+  }
+  applyMascot(D.mascot);
+  const $ = (id) => document.getElementById(id);
+  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
+
+  $("badge").textContent = D.week.label;
+  $("range").textContent = `${D.week.start} – ${D.week.end}`;
+  $("trainSummary").textContent = `完成 ${D.training.done} / ${D.training.planned} 次・共 ${D.training.minutes} 分鐘`;
+  $("footerLeft").textContent = D.footer || "";
+  $("footerRight").textContent = D.footerRight || "";
+
+
+  for (const s of D.stats) {
+    const box = el("div", "stat");
+    box.append(el("div", "label", s.label));
+    const v = el("div", "value", s.value);
+    if (s.unit) v.append(el("span", "", s.unit));
+    box.append(v);
+    if (s.bar !== undefined) {
+      const bar = el("div", "bar"); const fill = el("i");
+      fill.style.width = `${Math.max(0, Math.min(100, s.bar))}%`;
+      bar.append(fill); box.append(bar);
+    }
+    if (s.sub) box.append(el("div", "sub", s.sub));
+    if (s.target) box.append(el("div", "target", `目標 ${s.target}`));
+    if (s.gap) box.append(el("span", `gap ${s.tone === "bad" ? "bad" : "good"}`, s.gap));
+    $("stats").append(box);
+  }
+
+  // 運動名稱 → 圖示；「健身＋游泳」會拆成兩個
+  const ICONS = { "健身": "ic-gym", "游泳": "ic-swim", "教練課": "ic-coach", "跑步": "ic-run", "走路": "ic-walk", "伸展": "ic-stretch", "休息": "ic-rest" };
+  const NS = "http://www.w3.org/2000/svg";
+  function icon(id) {
+    const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 24 24");
+    const use = document.createElementNS(NS, "use"); use.setAttribute("href", `#${id}`);
+    svg.append(use); return svg;
+  }
+  function workoutIcons(workout, status) {
+    const box = el("span", `ico ${status}`);
+    for (const name of String(workout || "休息").split(/[＋+、]/)) {
+      const svg = icon(ICONS[name.trim()] || "ic-other");
+      const t = document.createElementNS(NS, "title"); t.textContent = name.trim(); svg.append(t);
+      box.append(svg);
+    }
+    return box;
+  }
+  for (const [name, id] of Object.entries(ICONS)) {
+    const s = el("span"); s.append(icon(id), document.createTextNode(name)); $("icoLegend").append(s);
+  }
+
+  // 每天一列：運動圖示＋早午晚（off＝和菜單不同）＋當日蛋白質
+  for (const d of D.days) {
+    const tr = el("tr");
+    const wd = el("td", "wd", d.weekday); wd.append(el("small", "", d.date)); tr.append(wd);
+    const w = el("td"); w.append(workoutIcons(d.workout, d.status)); tr.append(w);
+    for (const k of ["b", "l", "d"]) {
+      const cell = d[k] || { t: "—" };
+      tr.append(el("td", cell.off ? "off" : "", cell.t));
+    }
+    // 熱量：依當天目標區間（運動日／休息日）判斷；蛋白質：達到 D.proteinTarget 以上算達標
+    const k = d.kcal, [lo, hi] = d.kcalTarget || [0, Infinity];
+    const kTone = k == null ? "" : k < lo ? "low" : k > hi ? "over" : "good";
+    tr.append(el("td", `num ${kTone}`, k == null ? "—" : k.toLocaleString("en-US")));
+    const p = d.protein;
+    tr.append(el("td", `num ${p == null ? "" : p >= D.proteinTarget ? "good" : "low"}`, p == null ? "—" : `${p} g`));
+    $("week").append(tr);
+  }
+  // 計算方式（灰色小字）：每條規則一行，「標題：內容」
+  for (const line of D.rules || []) {
+    const div = el("div");
+    const [head, ...rest] = line.split("：");
+    if (rest.length) { div.append(el("b", "", head), document.createTextNode("：" + rest.join("："))); }
+    else div.textContent = line;
+    $("rules").append(div);
+  }
+
+  for (const r of D.review) {
+    const li = el("li", r.type);
+    li.append(el("span", "mark", r.type === "good" ? "做得好" : "要改進"), el("span", "", r.text));
+    $("review").append(li);
+  }
+</script>
+</body>
+</html>

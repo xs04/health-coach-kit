@@ -1,0 +1,49 @@
+{
+  "_comment": "範例資料（虛構人物），只用來展示版面。實際使用時由 AI 依使用者的 Notion 紀錄產生。",
+  "week": { "label": "W01", "start": "1/04（六）", "end": "1/10（五）" },
+  "proteinTarget": 100,
+  "training": { "done": 3, "planned": 4, "minutes": 190 },
+  "days": [
+    { "weekday": "六", "date": "1/04", "workout": "健身", "status": "done",
+      "b": { "t": "蛋餅＋無糖豆漿" }, "l": { "t": "雞腿便當" }, "d": { "t": "鮭魚定食" },
+      "kcal": 1980, "kcalTarget": [1900, 2100], "protein": 104 },
+    { "weekday": "日", "date": "1/05", "workout": "休息", "status": "rest",
+      "b": { "t": "地瓜＋鮮奶" }, "l": { "t": "牛肉麵", "off": true }, "d": { "t": "雞胸沙拉" },
+      "kcal": 1850, "kcalTarget": [1650, 1800], "protein": 88 },
+    { "weekday": "一", "date": "1/06", "workout": "跑步", "status": "done",
+      "b": { "t": "茶葉蛋＋豆漿" }, "l": { "t": "自助餐" }, "d": { "t": "雞胸＋地瓜" },
+      "kcal": 1960, "kcalTarget": [1900, 2100], "protein": 112 },
+    { "weekday": "二", "date": "1/07", "workout": "休息", "status": "rest",
+      "b": { "t": "茶葉蛋＋豆漿" }, "l": { "t": "雞腿便當" }, "d": { "t": "水餃＋燙青菜" },
+      "kcal": 1720, "kcalTarget": [1650, 1800], "protein": 101 },
+    { "weekday": "三", "date": "1/08", "workout": "游泳", "status": "swap",
+      "b": { "t": "優格＋燕麥" }, "l": { "t": "雞胸便當" }, "d": { "t": "自助餐" },
+      "kcal": 2010, "kcalTarget": [1900, 2100], "protein": 107 },
+    { "weekday": "四", "date": "1/09", "workout": "休息", "status": "rest",
+      "b": { "t": "茶葉蛋＋豆漿" }, "l": { "t": "豬排飯", "off": true }, "d": { "t": "雞湯麵" },
+      "kcal": 1890, "kcalTarget": [1650, 1800], "protein": 92 },
+    { "weekday": "五", "date": "1/10", "workout": "健身", "status": "skip",
+      "b": { "t": "茶葉蛋＋豆漿" }, "l": { "t": "雞腿便當" }, "d": { "t": "—" },
+      "kcal": null, "kcalTarget": [1900, 2100], "protein": null }
+  ],
+  "stats": [
+    { "label": "平均蛋白質", "value": "101", "unit": "g／天", "target": "100 g 以上", "gap": "✓ 多 1 g・4／6 天達標", "tone": "good" },
+    { "label": "平均熱量", "value": "1,902", "unit": "kcal", "sub": "照菜單吃 67%", "target": "1,790–1,970", "gap": "✓ 在範圍內", "tone": "good" },
+    { "label": "腰圍", "value": "82.0", "unit": "cm", "target": "80 cm 以下", "gap": "還差 2.0 cm（已 −1.0）", "tone": "bad" }
+  ],
+  "rules": [
+    "熱量：依原定計畫，運動日 1,900–2,100、休息日 1,650–1,800 kcal 為達標；週平均目標＝7 天每日目標的平均",
+    "蛋白質：每天 100 g 以上為達標",
+    "運動：照計畫＝依原定排程完成；有調整＝有運動但項目不同；沒做到＝計畫要練但沒練",
+    "腰圍：目標 80 cm 以下，以最新一次量測計算差距",
+    "熱量與蛋白質為估計值"
+  ],
+  "review": [
+    { "type": "good", "text": "週六、週一的運動都照計畫完成" },
+    { "type": "good", "text": "6 天有紀錄的日子中，4 天蛋白質達標" },
+    { "type": "fix", "text": "週日、週四休息日熱量超過 1,800" },
+    { "type": "fix", "text": "週五計畫健身但沒去，晚餐也沒有紀錄" }
+  ],
+  "footer": "第 1 週・紀錄 6／7 天",
+  "footerRight": ""
+}
