@@ -39,6 +39,8 @@ node weekly-card/render.mjs data.json out.png          # Node＋Playwright
 python weekly-card/build_html.py data.json out.html    # 沒有 Node 時；開啟 HTML 後截圖
 ```
 
+環境裡沒有這些檔案時，用 SPEC.md 的「線上檢視」產生連結。
+
 產生後照 [weekly-card/SPEC.md](weekly-card/SPEC.md) 的檢查表自己看一次再傳。重點：只放規格列出的區塊（7 天表格、三格平均 vs 目標、計算方式、3–4 條檢討、頁尾），不能出現沒有記錄的指標（睡眠、壓力、喝水、趨勢圖等），手機直式 1080 px。
 
 週報上的吉祥物要**跟使用者一起決定**：預設的伯恩山只是範例，可以換成使用者的寵物（請對方拍照）、喜歡的動物，或不放。畫好之後先產生一張範例週報給使用者看，確認後才存起來。流程和畫法規格在 [weekly-card/MASCOT.md](weekly-card/MASCOT.md)。

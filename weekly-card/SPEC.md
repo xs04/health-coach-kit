@@ -7,11 +7,37 @@
 
 | 規則 | 說明 |
 |---|---|
-| ✅ 只能用 `weekly-card/template.html` | 透過 `render.mjs`（Node）或 `build_html.py`（Python）把 JSON 填進範本 |
+| ✅ 只能用 `weekly-card/template.html` | 你只負責**產生 JSON**，版面由範本決定 |
 | ❌ 不能用圖片生成模型 | DALL·E、GPT 圖片生成、Imagen、Gemini 圖片生成等都不行。生成的圖會畫錯數字、亂加內容 |
-| ❌ 不能自己重寫版面 | 不要另外寫 HTML、畫 matplotlib 圖表、做投影片。你只負責**產生 JSON**，版面由範本決定 |
-| 程式環境拿不到範本檔案時 | 請使用者上傳 `weekly-card/template.html` 和 `build_html.py`（或整個 ZIP），**不要改用圖片生成** |
-| 完全不能執行程式時 | 用文字表格呈現同樣的欄位（見第 3 節），不要畫圖 |
+| ❌ 不能自己重寫版面 | 不要另外寫 HTML、畫 matplotlib 圖表、做投影片 |
+
+### 把 JSON 變成圖：照順序選第一個做得到的
+
+| # | 情況 | 做法 |
+|---|---|---|
+| A | 你的環境裡**有這個 repo 的檔案**（Claude Code、Gemini CLI、使用者有上傳） | `node weekly-card/render.mjs data.json out.png`，或 `python weekly-card/build_html.py data.json out.html` |
+| B | **只是透過網址或 GitHub 連線讀到文件**（ChatGPT、Gemini App 常見） | 用**線上檢視**，不需要使用者上傳任何檔案，見下方 |
+| C | 線上檢視打不開 | 請使用者上傳 `weekly-card/template.html` 和 `build_html.py`，再用 A |
+| D | 都不行 | 用文字表格呈現同樣的欄位（見第 3 節），不要畫圖 |
+
+> 注意：**連線讀得到檔案，不代表程式環境裡有這個檔案**。ChatGPT 的 Python 環境通常連不上網路，所以不要叫 Python 去下載範本，直接用 B。
+
+### 線上檢視（B）
+
+網址：`https://xs04.github.io/health-coach-kit/weekly-card/template.html`
+
+1. 有 Python 環境：用下面的程式把 JSON 變成連結，給使用者點（程式只用標準函式庫，不需要網路）：
+
+   ```python
+   import base64, json
+   raw = json.dumps(data, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+   link = "https://xs04.github.io/health-coach-kit/weekly-card/template.html#d=" + base64.urlsafe_b64encode(raw).decode().rstrip("=")
+   ```
+
+2. 沒有 Python 環境：把 JSON 放在程式碼區塊給使用者，請對方打開上面的網址，**整段複製貼上**後按「產生」。不要自己手動做 base64。
+3. 使用者在手機上打開，畫面就是週報，截圖即可。
+
+資料放在網址 `#` 後面，瀏覽器**不會**把這段送到伺服器；但拿到連結的人都看得到內容，所以提醒使用者**傳截圖給教練，不要傳連結**。
 
 ## 2. 尺寸：手機直式
 
@@ -49,7 +75,7 @@
 
 逐項確認，有任何一項不符就重做：
 
-- [ ] 是用 `template.html` 產生的（不是圖片生成，也不是自己寫的版面）
+- [ ] 是用 `template.html` 產生的（render.mjs、build_html.py 或線上檢視；不是圖片生成，也不是自己寫的版面）
 - [ ] 寬 1080 px、直式
 - [ ] 只有第 3 節列出的區塊，沒有多的
 - [ ] 每個數字都能在使用者的紀錄裡找到來源；沒紀錄的是「—」

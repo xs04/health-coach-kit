@@ -2,6 +2,8 @@
 <html lang="zh-Hant-TW">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=1080">
+<title>週報</title>
 <style>
   /* 週報卡片：寬 1080，高度依內容。所有數字、目標、規則都由 data JSON 提供，範本本身不含任何個人設定 */
   :root {
@@ -106,6 +108,12 @@
   .review .fix .mark { background: #fbe3dc; color: var(--warn); }
 
   footer { display: flex; justify-content: space-between; align-items: center; font-size: 20px; color: var(--muted); }
+  #loader { padding: 64px; font-size: 34px; }
+  #loader h2 { font-size: 48px; margin-bottom: 16px; }
+  #loader p { color: var(--muted); margin-bottom: 24px; }
+  #loader textarea { width: 100%; height: 900px; font: 26px/1.4 monospace; padding: 20px; border: 2px solid var(--line); border-radius: 16px; }
+  #loader button { margin-top: 24px; font-size: 38px; padding: 18px 64px; border: 0; border-radius: 999px; background: var(--mint-deep); color: var(--white); }
+  [hidden] { display: none !important; }
 </style>
 </head>
 <body>
@@ -261,116 +269,159 @@
   </div>
 </div>
 
+<div id="loader" hidden>
+  <h2>週報</h2>
+  <p id="loaderMsg">貼上週報資料（JSON），按「產生」</p>
+  <textarea id="loaderText" spellcheck="false" placeholder='{ "week": { ... }, "days": [ ... ] }'></textarea>
+  <button id="loaderBtn" type="button">產生</button>
+</div>
+
 <script>
-  // 資料由 render.mjs 注入到 window.CARD_DATA；全部用 textContent 寫入
-  const D = window.CARD_DATA;
-
-  // 吉祥物：省略＝預設伯恩山；"none"＝不放；{ lift, peek }＝自訂 SVG 片段（座標規格見 MASCOT.md）
-  function sanitizeSvgFragment(fragment) {
-    // 只允許純圖形：移除 script、foreignObject、事件屬性、外部連結
-    const doc = new DOMParser().parseFromString(
-      `<svg xmlns="http://www.w3.org/2000/svg">${fragment}</svg>`, "image/svg+xml");
-    if (doc.querySelector("parsererror")) return null;
-    doc.querySelectorAll("script, foreignObject, iframe, image").forEach((n) => n.remove());
-    doc.querySelectorAll("*").forEach((n) => {
-      for (const a of [...n.attributes]) {
-        const name = a.name.toLowerCase();
-        if (name.startsWith("on")) n.removeAttribute(a.name);
-        if ((name === "href" || name === "xlink:href") && !a.value.startsWith("#")) n.removeAttribute(a.name);
+  // 資料來源（依序）：
+  //   1. render.mjs / build_html.py 注入的 window.CARD_DATA
+  //   2. 網址的 #d=<base64url(UTF-8 JSON)>（# 後面的內容不會送到伺服器）
+  //   3. 都沒有：顯示貼上 JSON 的輸入框
+  // 全部用 textContent 寫入，吉祥物 SVG 另外過濾
+  function dataFromHash() {
+    const m = location.hash.match(/^#d=([A-Za-z0-9_-]+)/);
+    if (!m) return null;
+    try {
+      const b64 = m[1].replace(/-/g, "+").replace(/_/g, "/");
+      const bytes = Uint8Array.from(atob(b64 + "===".slice((b64.length + 3) % 4)), (c) => c.charCodeAt(0));
+      return JSON.parse(new TextDecoder().decode(bytes));
+    } catch (e) { return null; }
+  }
+  function showLoader(message) {
+    document.getElementById("card").hidden = true;
+    const box = document.getElementById("loader");
+    box.hidden = false;
+    if (message) document.getElementById("loaderMsg").textContent = message;
+    document.getElementById("loaderBtn").onclick = () => {
+      try {
+        const data = JSON.parse(document.getElementById("loaderText").value);
+        box.hidden = true;
+        document.getElementById("card").hidden = false;
+        renderCard(data);
+      } catch (e) {
+        document.getElementById("loaderMsg").textContent = "格式不對，請貼上完整的 JSON（從 { 到 }）";
       }
-    });
-    return [...doc.documentElement.childNodes];
+    };
   }
-  function applyMascot(m) {
-    if (m === "none") { document.getElementById("card").classList.add("no-mascot"); return; }
-    if (!m || typeof m !== "object") return;
-    for (const [key, id] of [["lift", "dogLift"], ["peek", "dogPeek"]]) {
-      if (!m[key]) continue;
-      const nodes = sanitizeSvgFragment(m[key]);
-      if (!nodes) continue;
-      const target = document.getElementById(id);
-      target.replaceChildren(...nodes.map((n) => document.importNode(n, true)));
+
+  const initial = window.CARD_DATA || dataFromHash();
+  if (initial) renderCard(initial);
+  else showLoader(location.hash.startsWith("#d=") ? "連結的資料讀不到（可能不完整），請改貼 JSON" : "");
+
+  // 把資料畫成卡片
+  function renderCard(D) {
+
+    // 吉祥物：省略＝預設伯恩山；"none"＝不放；{ lift, peek }＝自訂 SVG 片段（座標規格見 MASCOT.md）
+    function sanitizeSvgFragment(fragment) {
+      // 只允許純圖形：移除 script、foreignObject、事件屬性、外部連結
+      const doc = new DOMParser().parseFromString(
+        `<svg xmlns="http://www.w3.org/2000/svg">${fragment}</svg>`, "image/svg+xml");
+      if (doc.querySelector("parsererror")) return null;
+      doc.querySelectorAll("script, foreignObject, iframe, image").forEach((n) => n.remove());
+      doc.querySelectorAll("*").forEach((n) => {
+        for (const a of [...n.attributes]) {
+          const name = a.name.toLowerCase();
+          if (name.startsWith("on")) n.removeAttribute(a.name);
+          if ((name === "href" || name === "xlink:href") && !a.value.startsWith("#")) n.removeAttribute(a.name);
+        }
+      });
+      return [...doc.documentElement.childNodes];
     }
-  }
-  applyMascot(D.mascot);
-  const $ = (id) => document.getElementById(id);
-  const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
-
-  $("badge").textContent = D.week.label;
-  $("range").textContent = `${D.week.start} – ${D.week.end}`;
-  $("trainSummary").textContent = `完成 ${D.training.done} / ${D.training.planned} 次・共 ${D.training.minutes} 分鐘`;
-  $("footerLeft").textContent = D.footer || "";
-  $("footerRight").textContent = D.footerRight || "";
-
-
-  for (const s of D.stats) {
-    const box = el("div", "stat");
-    box.append(el("div", "label", s.label));
-    const v = el("div", "value", s.value);
-    if (s.unit) v.append(el("span", "", s.unit));
-    box.append(v);
-    if (s.bar !== undefined) {
-      const bar = el("div", "bar"); const fill = el("i");
-      fill.style.width = `${Math.max(0, Math.min(100, s.bar))}%`;
-      bar.append(fill); box.append(bar);
+    function applyMascot(m) {
+      if (m === "none") { document.getElementById("card").classList.add("no-mascot"); return; }
+      if (!m || typeof m !== "object") return;
+      for (const [key, id] of [["lift", "dogLift"], ["peek", "dogPeek"]]) {
+        if (!m[key]) continue;
+        const nodes = sanitizeSvgFragment(m[key]);
+        if (!nodes) continue;
+        const target = document.getElementById(id);
+        target.replaceChildren(...nodes.map((n) => document.importNode(n, true)));
+      }
     }
-    if (s.sub) box.append(el("div", "sub", s.sub));
-    if (s.target) box.append(el("div", "target", `目標 ${s.target}`));
-    if (s.gap) box.append(el("span", `gap ${s.tone === "bad" ? "bad" : "good"}`, s.gap));
-    $("stats").append(box);
-  }
+    applyMascot(D.mascot);
+    const $ = (id) => document.getElementById(id);
+    const el = (tag, cls, text) => { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; };
 
-  // 運動名稱 → 圖示；「健身＋游泳」會拆成兩個
-  const ICONS = { "健身": "ic-gym", "游泳": "ic-swim", "教練課": "ic-coach", "跑步": "ic-run", "走路": "ic-walk", "伸展": "ic-stretch", "休息": "ic-rest" };
-  const NS = "http://www.w3.org/2000/svg";
-  function icon(id) {
-    const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 24 24");
-    const use = document.createElementNS(NS, "use"); use.setAttribute("href", `#${id}`);
-    svg.append(use); return svg;
-  }
-  function workoutIcons(workout, status) {
-    const box = el("span", `ico ${status}`);
-    for (const name of String(workout || "休息").split(/[＋+、]/)) {
-      const svg = icon(ICONS[name.trim()] || "ic-other");
-      const t = document.createElementNS(NS, "title"); t.textContent = name.trim(); svg.append(t);
-      box.append(svg);
+    $("badge").textContent = D.week.label;
+    $("range").textContent = `${D.week.start} – ${D.week.end}`;
+    $("trainSummary").textContent = `完成 ${D.training.done} / ${D.training.planned} 次・共 ${D.training.minutes} 分鐘`;
+    $("footerLeft").textContent = D.footer || "";
+    $("footerRight").textContent = D.footerRight || "";
+
+
+    for (const s of D.stats) {
+      const box = el("div", "stat");
+      box.append(el("div", "label", s.label));
+      const v = el("div", "value", s.value);
+      if (s.unit) v.append(el("span", "", s.unit));
+      box.append(v);
+      if (s.bar !== undefined) {
+        const bar = el("div", "bar"); const fill = el("i");
+        fill.style.width = `${Math.max(0, Math.min(100, s.bar))}%`;
+        bar.append(fill); box.append(bar);
+      }
+      if (s.sub) box.append(el("div", "sub", s.sub));
+      if (s.target) box.append(el("div", "target", `目標 ${s.target}`));
+      if (s.gap) box.append(el("span", `gap ${s.tone === "bad" ? "bad" : "good"}`, s.gap));
+      $("stats").append(box);
     }
-    return box;
-  }
-  for (const [name, id] of Object.entries(ICONS)) {
-    const s = el("span"); s.append(icon(id), document.createTextNode(name)); $("icoLegend").append(s);
-  }
 
-  // 每天一列：運動圖示＋早午晚（off＝和菜單不同）＋當日蛋白質
-  for (const d of D.days) {
-    const tr = el("tr");
-    const wd = el("td", "wd", d.weekday); wd.append(el("small", "", d.date)); tr.append(wd);
-    const w = el("td"); w.append(workoutIcons(d.workout, d.status)); tr.append(w);
-    for (const k of ["b", "l", "d"]) {
-      const cell = d[k] || { t: "—" };
-      tr.append(el("td", cell.off ? "off" : "", cell.t));
+    // 運動名稱 → 圖示；「健身＋游泳」會拆成兩個
+    const ICONS = { "健身": "ic-gym", "游泳": "ic-swim", "教練課": "ic-coach", "跑步": "ic-run", "走路": "ic-walk", "伸展": "ic-stretch", "休息": "ic-rest" };
+    const NS = "http://www.w3.org/2000/svg";
+    function icon(id) {
+      const svg = document.createElementNS(NS, "svg"); svg.setAttribute("viewBox", "0 0 24 24");
+      const use = document.createElementNS(NS, "use"); use.setAttribute("href", `#${id}`);
+      svg.append(use); return svg;
     }
-    // 熱量：依當天目標區間（運動日／休息日）判斷；蛋白質：達到 D.proteinTarget 以上算達標
-    const k = d.kcal, [lo, hi] = d.kcalTarget || [0, Infinity];
-    const kTone = k == null ? "" : k < lo ? "low" : k > hi ? "over" : "good";
-    tr.append(el("td", `num ${kTone}`, k == null ? "—" : k.toLocaleString("en-US")));
-    const p = d.protein;
-    tr.append(el("td", `num ${p == null ? "" : p >= D.proteinTarget ? "good" : "low"}`, p == null ? "—" : `${p} g`));
-    $("week").append(tr);
-  }
-  // 計算方式（灰色小字）：每條規則一行，「標題：內容」
-  for (const line of D.rules || []) {
-    const div = el("div");
-    const [head, ...rest] = line.split("：");
-    if (rest.length) { div.append(el("b", "", head), document.createTextNode("：" + rest.join("："))); }
-    else div.textContent = line;
-    $("rules").append(div);
-  }
+    function workoutIcons(workout, status) {
+      const box = el("span", `ico ${status}`);
+      for (const name of String(workout || "休息").split(/[＋+、]/)) {
+        const svg = icon(ICONS[name.trim()] || "ic-other");
+        const t = document.createElementNS(NS, "title"); t.textContent = name.trim(); svg.append(t);
+        box.append(svg);
+      }
+      return box;
+    }
+    for (const [name, id] of Object.entries(ICONS)) {
+      const s = el("span"); s.append(icon(id), document.createTextNode(name)); $("icoLegend").append(s);
+    }
 
-  for (const r of D.review) {
-    const li = el("li", r.type);
-    li.append(el("span", "mark", r.type === "good" ? "做得好" : "要改進"), el("span", "", r.text));
-    $("review").append(li);
+    // 每天一列：運動圖示＋早午晚（off＝和菜單不同）＋當日蛋白質
+    for (const d of D.days) {
+      const tr = el("tr");
+      const wd = el("td", "wd", d.weekday); wd.append(el("small", "", d.date)); tr.append(wd);
+      const w = el("td"); w.append(workoutIcons(d.workout, d.status)); tr.append(w);
+      for (const k of ["b", "l", "d"]) {
+        const cell = d[k] || { t: "—" };
+        tr.append(el("td", cell.off ? "off" : "", cell.t));
+      }
+      // 熱量：依當天目標區間（運動日／休息日）判斷；蛋白質：達到 D.proteinTarget 以上算達標
+      const k = d.kcal, [lo, hi] = d.kcalTarget || [0, Infinity];
+      const kTone = k == null ? "" : k < lo ? "low" : k > hi ? "over" : "good";
+      tr.append(el("td", `num ${kTone}`, k == null ? "—" : k.toLocaleString("en-US")));
+      const p = d.protein;
+      tr.append(el("td", `num ${p == null ? "" : p >= D.proteinTarget ? "good" : "low"}`, p == null ? "—" : `${p} g`));
+      $("week").append(tr);
+    }
+    // 計算方式（灰色小字）：每條規則一行，「標題：內容」
+    for (const line of D.rules || []) {
+      const div = el("div");
+      const [head, ...rest] = line.split("：");
+      if (rest.length) { div.append(el("b", "", head), document.createTextNode("：" + rest.join("："))); }
+      else div.textContent = line;
+      $("rules").append(div);
+    }
+
+    for (const r of D.review) {
+      const li = el("li", r.type);
+      li.append(el("span", "mark", r.type === "good" ? "做得好" : "要改進"), el("span", "", r.text));
+      $("review").append(li);
+    }
   }
 </script>
 </body>

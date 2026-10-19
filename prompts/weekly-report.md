@@ -31,6 +31,7 @@
 4. 產生圖片（**禁止用圖片生成模型，也不要自己重寫版面**）：
    - 能跑 Node＋Playwright：`node weekly-card/render.mjs <data.json> <out.png>`
    - 只能跑 Python：`python weekly-card/build_html.py <data.json> <out.html>`，有 Python 版 Playwright 就加 `--png <out.png>`
+   - 環境裡沒有範本檔案（只是透過網址或連線讀到）：用**線上檢視**，見 weekly-card/SPEC.md 第 1 節 B，不要請使用者上傳
    - 都不能執行：用文字表格呈現同樣的內容
 5. 照 weekly-card/SPEC.md 第 5 節的檢查表自己看一次圖：用範本產生、直式、沒有多的區塊、每個數字都有紀錄來源、沒有裁切或截斷（出現「…」就縮短後重做）、吉祥物沒有擋到文字。
 6. 傳給使用者，問檢討項目要不要修改；確認後使用者自己轉給教練。

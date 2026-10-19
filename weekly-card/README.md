@@ -7,6 +7,7 @@
 | `template.html` | 版面、配色、伯恩山插畫、運動圖示（全部是內嵌 SVG，不需要網路或圖片檔） |
 | `render.mjs` | Node＋Playwright：JSON → PNG |
 | `build_html.py` | 只用 Python 標準函式庫：JSON → 獨立 HTML（開啟後截圖）；有 Python 版 Playwright 可加 `--png` 直接出圖 |
+| `make_link.py` | JSON → 線上檢視連結（給沒有範本檔案的環境，例如 ChatGPT） |
 | `sample.json` | 範例資料（**虛構人物**） |
 | `preview.png` | 範例圖 |
 | `SPEC.md` | 圖卡規格：能放什麼、禁止什麼、傳出前的檢查表 |
@@ -20,6 +21,17 @@ node render.mjs sample.json out.png
 python build_html.py sample.json out.html
 python build_html.py sample.json out.html --png out.png   # 需要 Python 版 Playwright
 ```
+
+### 線上檢視
+
+`template.html` 也可以直接在瀏覽器打開：
+
+| 網址 | 結果 |
+|---|---|
+| `https://xs04.github.io/health-coach-kit/weekly-card/template.html#d=<資料>` | 直接顯示週報（`make_link.py` 產生） |
+| `https://xs04.github.io/health-coach-kit/weekly-card/template.html` | 顯示輸入框，貼上 JSON 按「產生」 |
+
+資料在 `#` 後面，不會送到伺服器。需要 repo 公開並開啟 GitHub Pages（Settings → Pages → Deploy from a branch → `main`／`/ (root)`）。
 
 圖片寬 1080 px，高度依內容自動調整（大約 1,700–1,800 px）。
 
