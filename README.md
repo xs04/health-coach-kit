@@ -40,7 +40,7 @@
 | | Claude | ChatGPT | Gemini |
 |---|---|---|---|
 | 詳細步驟 | [platforms/claude.md](platforms/claude.md) | [platforms/chatgpt.md](platforms/chatgpt.md) | [platforms/gemini.md](platforms/gemini.md) |
-| 狀態 | ✅ 整套流程實際跑過 | ⚠️ 未實際測試 | ⚠️ 未實際測試 |
+| 狀態 | ✅ 整套流程實際跑過 | ⚠️ 部分實測（Notion 要在每個對話手動選取） | ⚠️ 未實際測試 |
 | 紀錄位置 | Notion | Notion（不能寫入時用 CSV） | 建議 Google 試算表；Gemini CLI 可接 Notion |
 | 建議用法 | 安裝成 **Skill**（見下方），或給網址 | 放進「專案」 | 建立「Gem」，或用 Gemini CLI |
 
