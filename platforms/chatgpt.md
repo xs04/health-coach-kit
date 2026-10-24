@@ -11,6 +11,14 @@
 | 建議使用「專案（Project）」 | 想長期使用的話，把上面那些檔案放進專案的檔案區，專案說明寫：「照 AGENTS.md 和 safety.md 協助我」。之後所有對話都在這個專案裡進行，ChatGPT 比較不會忘記設定 |
 | Notion 連線 | 先在 ChatGPT 的設定裡連上 Notion（Connectors／應用程式）。**連上之後，每個新對話還要再手動選取一次**，見下方「實測發現」 |
 
+## 實測發現：只能開使用者貼的網址
+
+ChatGPT 讀得到使用者貼的 AGENTS.md，但**自己去開** `safety.md`、`onboarding/questions.md` 這些網址會失敗（就算 repo 是公開的），然後就請使用者上傳檔案。原因是 ChatGPT 通常只能開「使用者在對話裡貼過」或搜尋結果裡出現的網址。
+
+**做法**：一開始就貼合併版 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md`（README「怎麼開始」已經改成這個網址）。
+
+**給 ChatGPT（AI）**：如果使用者貼的是 AGENTS.md，而你開不了其他檔案，**不要請使用者上傳**，請對方貼上面那個合併版網址。
+
 ## 實測發現：Notion 連線要在每個對話裡開啟
 
 ChatGPT 在設定裡連上 Notion 之後，**不會自動在每個對話裡使用**，也不會主動提醒你開啟。沒開啟的話，它會說自己沒辦法寫 Notion，或直接跳到替代做法。

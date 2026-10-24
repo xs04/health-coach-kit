@@ -19,7 +19,9 @@
 1. 建議先在你的 AI 連上 **Notion**（沒有 Notion 也可以用，但功能會少一些）
 2. 開一個新對話，貼上這段話：
 
-   > 請讀 https://raw.githubusercontent.com/xs04/health-coach-kit/main/AGENTS.md ，照裡面的流程幫我設定。開始前先引用這份文件的第一行，讓我確認你真的讀到了。
+   > 請讀 https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md ，照裡面的 AGENTS.md 流程幫我設定。開始前先引用 AGENTS.md 的第一行，讓我確認你真的讀到了。
+
+   `ALL-IN-ONE.md` 是所有說明文件的合併版。有些 AI（例如 ChatGPT）只能開你貼的那一個網址，用合併版才讀得到全部內容。
 
 3. 回答它的問題，大約 10–15 分鐘
 
@@ -29,7 +31,7 @@
 
 | 方法 | 適用情況 |
 |---|---|
-| 1. 貼網址（上面那段話） | repo 是公開的，而且 AI 能上網讀網頁 |
+| 1. 貼網址（上面那段話） | AI 能上網讀網頁。不需要 GitHub 帳號 |
 | 2. 在 AI 裡連接 GitHub，把這個 repo 附加進對話 | repo 是私人的，而且你有被加為協作者 |
 | 3. 下載檔案上傳 | 都不行時。GitHub 頁面按 **Code → Download ZIP**，解壓後上傳 `AGENTS.md`、`safety.md`、`onboarding/`、`notion/`、`prompts/`、`platforms/` 裡你用的那份、`weekly-card/` |
 
@@ -72,7 +74,8 @@
 
 ```
 SKILL.md               ← Claude Skill 的入口
-AGENTS.md              ← 給 AI 的主要流程（ChatGPT、Gemini 從這裡開始）
+AGENTS.md              ← 給 AI 的主要流程
+ALL-IN-ONE.md          ← 所有說明文件的合併版，貼一個網址就能讀到全部（由 scripts/build_bundle.py 產生）
 CLAUDE.md、GEMINI.md   ← Claude Code、Gemini CLI 會自動讀，指回 AGENTS.md
 safety.md              ← 安全守則（AI 必讀）
 TESTING.md             ← 測試範本用的步驟（維護者、幫忙測試的人）
