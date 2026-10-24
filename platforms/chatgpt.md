@@ -11,13 +11,18 @@
 | 建議使用「專案（Project）」 | 想長期使用的話，把上面那些檔案放進專案的檔案區，專案說明寫：「照 AGENTS.md 和 safety.md 協助我」。之後所有對話都在這個專案裡進行，ChatGPT 比較不會忘記設定 |
 | Notion 連線 | 先在 ChatGPT 的設定裡連上 Notion（Connectors／應用程式）。**連上之後，每個新對話還要再手動選取一次**，見下方「實測發現」 |
 
-## 實測發現：只能開使用者貼的網址
+## 實測發現：網址常常讀不到
 
-ChatGPT 讀得到使用者貼的 AGENTS.md，但**自己去開** `safety.md`、`onboarding/questions.md` 這些網址會失敗（就算 repo 是公開的），然後就請使用者上傳檔案。原因是 ChatGPT 通常只能開「使用者在對話裡貼過」或搜尋結果裡出現的網址。
+repo 公開、網址也正確，ChatGPT 還是常讀不到：
+- 自己去開 AGENTS.md 裡提到的其他檔案（`safety.md`、`onboarding/questions.md`）會失敗。
+- 使用者親自貼的網址，也可能回報「Cache miss」「無效的網址」，新加的檔案特別容易遇到。ChatGPT 讀網頁似乎會依賴它自己的快取，結果不穩定。
 
-**做法**：一開始就貼合併版 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md`（README「怎麼開始」已經改成這個網址）。
+**做法**（依序）：
+1. 貼合併版 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md`，一個網址包含所有文件。
+2. 讀不到就**上傳合併版這一個檔案**：用瀏覽器打開上面的網址，存成檔案（手機：分享 → 儲存到檔案），再上傳到對話。不需要 GitHub 帳號，也不用下載 ZIP。
+3. 想長期使用：把 `ALL-IN-ONE.md` 放進「專案」的檔案，之後不用再讀網址。
 
-**給 ChatGPT（AI）**：如果使用者貼的是 AGENTS.md，而你開不了其他檔案，**不要請使用者上傳**，請對方貼上面那個合併版網址。
+**給 ChatGPT（AI）**：開不了其他檔案時，請使用者貼合併版網址；合併版也讀不到，請使用者**只上傳 `ALL-IN-ONE.md` 這一個檔案**，並告訴對方怎麼存檔（見上面第 2 點），不要叫對方下載 ZIP 或上傳一堆檔案。
 
 ## 實測發現：Notion 連線要在每個對話裡開啟
 

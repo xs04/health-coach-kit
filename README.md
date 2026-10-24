@@ -32,8 +32,9 @@
 | 方法 | 適用情況 |
 |---|---|
 | 1. 貼網址（上面那段話） | AI 能上網讀網頁。不需要 GitHub 帳號 |
-| 2. 在 AI 裡連接 GitHub，把這個 repo 附加進對話 | repo 是私人的，而且你有被加為協作者 |
-| 3. 下載檔案上傳 | 都不行時。GitHub 頁面按 **Code → Download ZIP**，解壓後上傳 `AGENTS.md`、`safety.md`、`onboarding/`、`notion/`、`prompts/`、`platforms/` 裡你用的那份、`weekly-card/` |
+| 2. **上傳合併版一個檔案**（最穩） | AI 說「Cache miss」「無效的網址」「讀不到」時。用瀏覽器打開 https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md ，存成檔案（手機：分享 → 儲存到檔案），再上傳到對話。不需要 GitHub 帳號 |
+| 3. 在 AI 裡連接 GitHub，把這個 repo 附加進對話 | 有 GitHub 帳號時 |
+| 4. 下載 ZIP 上傳 | 都不行時。GitHub 頁面按 **Code → Download ZIP**，解壓後上傳 `AGENTS.md`、`safety.md`、`onboarding/`、`notion/`、`prompts/`、`platforms/` 裡你用的那份、`weekly-card/` |
 
 > 判斷有沒有真的讀到：請 AI 引用 AGENTS.md 的第一行。引用不出來，或開始自己編流程，就是沒讀到。
 

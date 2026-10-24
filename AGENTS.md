@@ -6,7 +6,7 @@
 >
 > **如果你是透過網址讀到這份文件**：其他檔案的網址是 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/<路徑>`，例如 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/safety.md`。需要哪份就讀哪份。
 >
-> **開不了其他網址時**（例如 ChatGPT 只能開使用者親自貼的網址）：不要請使用者上傳檔案，請對方在對話裡貼上合併版的網址 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md`，那份包含所有需要的文件。還是讀不到，才請對方上傳檔案（見 README「AI 說讀不到的時候」）。**不要憑印象自己補流程**。
+> **開不了其他網址時**（例如 ChatGPT 只能開使用者親自貼的網址）：不要請使用者上傳檔案，請對方在對話裡貼上合併版的網址 `https://raw.githubusercontent.com/xs04/health-coach-kit/main/ALL-IN-ONE.md`，那份包含所有需要的文件。還是讀不到，請對方**只上傳 `ALL-IN-ONE.md` 這一個檔案**（用瀏覽器打開上面的網址存成檔案，不需要 GitHub 帳號；見 README「AI 說讀不到的時候」）。**不要憑印象自己補流程**。
 
 ## 全程規則
 
